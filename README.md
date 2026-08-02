@@ -7,7 +7,7 @@ Dự án đánh giá hiệu năng của mô hình KNN kết hợp hai phương p
 ```
 .
 ├── Main.ipynb              # Toàn bộ code: cài đặt PCA/LDA thủ công, pipeline, ablation study
-├── TechnicalReport.pdf               # Báo cáo kỹ thuật (technical report)
+├── TechnicalReport.pdf     # Báo cáo kỹ thuật (technical report)
 └── README.md
 ```
 
