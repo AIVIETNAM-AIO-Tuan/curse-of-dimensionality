@@ -1,4 +1,4 @@
-# PCA → LDA → KNN: Dimensionality Reduction Pipeline
+# Ảnh hưởng của các phương pháp giảm chiều trong mô hình KNN
 
 Dự án đánh giá hiệu năng của mô hình KNN kết hợp hai phương pháp giảm chiều **PCA** (Principal Component Analysis) và **LDA** (Linear Discriminant Analysis), sau đó kết hợp thành pipeline `PCA → LDA → KNN` để phân loại. Ngoài ra, dự án thực hiện **ablation study** nhằm đánh giá đóng góp riêng của từng bước giảm chiều, so sánh trên 3 bộ dữ liệu: **Breast Cancer**, **LFW People**, và **MNIST**.
 
