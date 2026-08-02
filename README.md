@@ -1,38 +1,40 @@
-# Curse of Dimensionality in KNN and the Role of Dimensionality Reduction
+# Ảnh hưởng của các phương pháp giảm chiều trong mô hình KNN
 
-**Câu hỏi nghiên cứu:** Khi số chiều dữ liệu tăng lên, KNN suy giảm như thế nào và dimensionality reduction có giúp cải thiện không?
+Dự án đánh giá hiệu năng của mô hình KNN kết hợp hai phương pháp giảm chiều **PCA** (Principal Component Analysis) và **LDA** (Linear Discriminant Analysis), sau đó kết hợp thành pipeline `PCA → LDA → KNN` để phân loại. Ngoài ra, dự án thực hiện **ablation study** nhằm đánh giá đóng góp riêng của từng bước giảm chiều, so sánh trên 3 bộ dữ liệu: **Breast Cancer**, **LFW People**, và **MNIST**.
 
-**Outcome dự kiến:** synthetic experiment, real dataset experiment, PCA comparison, accuracy/runtime analysis và visualization.
-
-## Cấu trúc repo
+## Cấu trúc thư mục
 
 ```
-knn-curse-of-dimensionality/
-├── README.md          # File này — tổng quan toàn dự án
-├── data/              # Dữ liệu: synthetic + real dataset
-├── research/          # Tài liệu nghiên cứu: lý thuyết, paper, nhật ký thí nghiệm
-├── models/            # KNN và các phương pháp dimensionality reduction
-├── pipeline/          # Luồng chạy thí nghiệm: load → preprocess → fit → evaluate
-├── results/           # Output sinh tự động: figures, bảng số liệu, logs
-├── report/            # Báo cáo cuối (viết sau)
-└── tests/             # Test cho model và pipeline
+.
+├── Main.ipynb              # Toàn bộ code: cài đặt PCA/LDA thủ công, pipeline, ablation study
+├── TechnicalReport.pdf     # Báo cáo kỹ thuật (technical report)
+└── README.md
 ```
 
-Mỗi folder chính có README riêng mô tả chi tiết nội dung bên trong:
+## Nội dung `Main.ipynb`
 
-| Folder | Nội dung | README |
-|---|---|---|
-| `data/` | Dataset thô, đã xử lý, synthetic | [data/README.md](data/README.md) |
-| `research/` | Nền tảng lý thuyết và literature | [research/README.md](research/README.md) |
-| `models/` | Estimators và reducers | [models/README.md](models/README.md) |
-| `pipeline/` | Orchestration thí nghiệm | [pipeline/README.md](pipeline/README.md) |
+**Phần 1 — Pipeline chính**
+- Cài đặt `Custom_PCA` và `Custom_LDA` thủ công bằng NumPy (không dùng `sklearn.decomposition`)
+- Hàm `apply_pca`, `apply_lda` để giảm chiều dữ liệu train/test
+- Pipeline `pca_lda_knn`: chuẩn hóa → PCA → LDA → phân loại KNN
+- So sánh accuracy với mô hình KNN gốc (không giảm chiều) trên 3 bộ dữ liệu
 
-## Nguyên tắc tổ chức
+**Phần 2 — Ablation Study**
+- Bổ sung các metric: accuracy, precision, recall, f1-score
+- So sánh 4 cấu hình: `normal` (không PCA+LDA), `pca` (chỉ PCA), `lda` (chỉ LDA), `pca_lda` (pipeline đầy đủ)
+- Vẽ heatmap delta so sánh giữa các cấu hình
+- Bảng tổng hợp kết quả trên cả 3 bộ dữ liệu
 
-- `data/raw/` không bao giờ bị chỉnh sửa — mọi biến đổi đọc từ đây và ghi ra `data/processed/`.
-- `results/` và `report/` là **output**, không phải input. Mọi thứ trong `results/` phải tái tạo được từ code + config.
-- `research/` trả lời **tại sao**, `models/` + `pipeline/` trả lời **như thế nào**.
+## Yêu cầu môi trường
 
-## Trạng thái
+```bash
+pip install numpy pandas matplotlib seaborn scikit-learn
+```
 
-Repo mới khởi tạo — hiện chỉ có cấu trúc thư mục và tài liệu. Code chưa được viết.
+## Cách chạy
+
+Mở và chạy tuần tự `Main.ipynb` (ví dụ bằng Jupyter Notebook hoặc Google Colab). Lưu ý bộ dữ liệu LFW People và MNIST sẽ được tải tự động qua `sklearn.datasets` (`fetch_lfw_people`, `fetch_openml`) và có thể mất vài phút cho lần chạy đầu tiên.
+
+## Báo cáo
+
+Chi tiết về cơ sở toán học, phương pháp luận và phân tích kết quả được trình bày đầy đủ trong `report.pdf`.
