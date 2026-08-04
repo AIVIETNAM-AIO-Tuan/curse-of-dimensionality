@@ -10,11 +10,11 @@ giá đóng góp riêng của từng bước giảm chiều trên 3 bộ dữ li
 ```
 .
 ├── README.md                  # File này
-├── requirements.txt            # Danh sách thư viện Python cần cài
+├── requirements.txt           # Danh sách thư viện Python cần cài
 ├── Technical Report.pdf       # Báo cáo kỹ thuật đầy đủ (cơ sở lý thuyết, phương
-│                               # pháp, kết quả thực nghiệm, phân tích ablation)
+│                              # pháp, kết quả thực nghiệm, phân tích ablation)
 ├── Main.ipynb                 # Notebook chạy thực nghiệm: chỉ import từ src/,
-│                               # không chứa logic nghiệp vụ
+│                              # không cần định nghĩa lại các module
 └── src/                       # Các thành phần tái sử dụng (logic chính)
     ├── __init__.py            # Export public API của package
     ├── pca.py                 # Custom_PCA — PCA tự cài đặt bằng NumPy
@@ -39,7 +39,7 @@ hiển thị kết quả, không định nghĩa logic trực tiếp trong notebo
 pip install -r requirements.txt
 ```
 
-(Python ≥ 3.9. Không cần cài `nbformat` để chạy notebook, chỉ cần Jupyter/JupyterLab.)
+(Python ≥ 3.9.)
 
 ## Cách chạy
 
@@ -52,16 +52,6 @@ pip install -r requirements.txt
    - In bảng metric (accuracy, precision, recall, f1) và heatmap delta cho
      từng bộ dữ liệu.
    - Gộp kết quả 3 bộ dữ liệu × 4 cấu hình thành một bảng tổng hợp `df_summary`.
-
-Cũng có thể dùng trực tiếp các thành phần trong `src/` ở script hoặc notebook khác:
-
-```python
-from src import pca_lda_knn, show_table, Custom_PCA, Custom_LDA
-
-res = pca_lda_knn(X, y, n_component_pca=8, n_component_lda=1,
-                   dataset_name="My Dataset")
-show_table(res, "My Dataset")
-```
 
 ## Tài liệu tham khảo chi tiết
 
