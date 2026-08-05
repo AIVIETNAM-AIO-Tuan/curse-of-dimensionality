@@ -1,0 +1,13 @@
+dataset,config,knn_dimension,timed_query_samples,warmups,repeats,median_ms_per_sample,speedup_vs_normal
+Breast Cancer,normal,30,171,1,5,0.049406,1.000000
+Breast Cancer,pca,8,171,1,5,0.026537,1.861808
+Breast Cancer,lda,1,171,1,5,0.019344,2.554101
+Breast Cancer,pca_lda,1,171,1,5,0.020701,2.386634
+LFW People,normal,1850,200,1,5,0.277537,1.000000
+LFW People,pca,100,200,1,5,0.030198,9.190676
+LFW People,lda,61,200,1,5,0.024566,11.297423
+LFW People,pca_lda,61,200,1,5,0.023907,11.609091
+MNIST,normal,784,200,1,5,2.747617,1.000000
+MNIST,pca,57,200,1,5,0.441008,6.230313
+MNIST,lda,9,200,1,5,0.298955,9.190727
+MNIST,pca_lda,9,200,1,5,0.309570,8.875603

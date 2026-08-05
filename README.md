@@ -1,40 +1,82 @@
-# Ảnh hưởng của các phương pháp giảm chiều trong mô hình KNN
+# PCA → LDA → KNN: Dimensionality Reduction Pipeline & Ablation Study
 
-Dự án đánh giá hiệu năng của mô hình KNN kết hợp hai phương pháp giảm chiều **PCA** (Principal Component Analysis) và **LDA** (Linear Discriminant Analysis), sau đó kết hợp thành pipeline `PCA → LDA → KNN` để phân loại. Ngoài ra, dự án thực hiện **ablation study** nhằm đánh giá đóng góp riêng của từng bước giảm chiều, so sánh trên 3 bộ dữ liệu: **Breast Cancer**, **LFW People**, và **MNIST**.
+Dự án đánh giá ảnh hưởng của PCA và LDA đối với KNN thông qua bốn cấu hình:
+`normal`, `pca`, `lda` và `pca_lda`. Thí nghiệm được thực hiện trên Breast
+Cancer, LFW People và MNIST bằng accuracy, macro-precision, macro-recall,
+macro-F1 và thời gian truy vấn của KNN.
 
-## Cấu trúc thư mục
+PCA và LDA được cài đặt thủ công bằng NumPy. `scikit-learn` được sử dụng để tải
+dữ liệu, chia train/test, chuẩn hóa, huấn luyện KNN và tính metric.
 
-```
-.
-├── Main.ipynb              # Toàn bộ code: cài đặt PCA/LDA thủ công, pipeline, ablation study
-├── TechnicalReport.pdf     # Báo cáo kỹ thuật (technical report)
-└── README.md
-```
+## Cấu trúc repository
 
-## Nội dung `Main.ipynb`
+| Đường dẫn | Vai trò |
+|---|---|
+| `Main.ipynb` | Tải dữ liệu, gọi pipeline và hiển thị bảng/heatmap |
+| `query_time_main10.py` | Đo riêng thời gian `KNN.predict` cho bốn cấu hình |
+| `results/query_time_main10.csv` | Kết quả query time dùng trong báo cáo |
+| `Technical_Report.pdf` | Báo cáo kỹ thuật |
+| `requirements.txt` | Danh sách thư viện Python |
+| `src/pca.py` | Cài đặt `Custom_PCA` |
+| `src/lda.py` | Cài đặt `Custom_LDA` |
+| `src/dim_reduction.py` | Các hàm `apply_pca` và `apply_lda` |
+| `src/metrics.py` | Metric phân loại và heatmap delta |
+| `src/pipeline.py` | Pipeline và bốn cấu hình ablation |
 
-**Phần 1 — Pipeline chính**
-- Cài đặt `Custom_PCA` và `Custom_LDA` thủ công bằng NumPy (không dùng `sklearn.decomposition`)
-- Hàm `apply_pca`, `apply_lda` để giảm chiều dữ liệu train/test
-- Pipeline `pca_lda_knn`: chuẩn hóa → PCA → LDA → phân loại KNN
-- So sánh accuracy với mô hình KNN gốc (không giảm chiều) trên 3 bộ dữ liệu
+Mọi logic có thể tái sử dụng nằm trong `src/`. Notebook và script ở thư mục
+gốc chỉ điều phối thí nghiệm.
 
-**Phần 2 — Ablation Study**
-- Bổ sung các metric: accuracy, precision, recall, f1-score
-- So sánh 4 cấu hình: `normal` (không PCA+LDA), `pca` (chỉ PCA), `lda` (chỉ LDA), `pca_lda` (pipeline đầy đủ)
-- Vẽ heatmap delta so sánh giữa các cấu hình
-- Bảng tổng hợp kết quả trên cả 3 bộ dữ liệu
+## Cài đặt
 
-## Yêu cầu môi trường
+Yêu cầu Python 3.9 trở lên.
 
 ```bash
-pip install numpy pandas matplotlib seaborn scikit-learn
+python -m pip install -r requirements.txt
 ```
 
-## Cách chạy
+## Chạy thí nghiệm phân loại
 
-Mở và chạy tuần tự `Main.ipynb` (ví dụ bằng Jupyter Notebook hoặc Google Colab). Lưu ý bộ dữ liệu LFW People và MNIST sẽ được tải tự động qua `sklearn.datasets` (`fetch_lfw_people`, `fetch_openml`) và có thể mất vài phút cho lần chạy đầu tiên.
+Mở `Main.ipynb` bằng Jupyter, JupyterLab, VS Code hoặc Google Colab và chạy tuần
+tự toàn bộ cell. Notebook sẽ:
+
+1. tải Breast Cancer, LFW People và MNIST;
+2. gọi `pca_lda_knn(...)` từ `src.pipeline`;
+3. đánh giá `normal`, `pca`, `lda` và `pca_lda`;
+4. in accuracy, macro-precision, macro-recall và macro-F1;
+5. vẽ heatmap delta và tạo bảng tổng hợp.
+
+Các thiết lập chính được giữ cố định: `test_size=0.3`, `random_state=42` và
+KNN với `k=5`.
+
+## Chạy phép đo query time
+
+Từ thư mục gốc của repository:
+
+```bash
+python query_time_main10.py --output results/query_time_main10.csv
+```
+
+Có thể chạy riêng một hoặc nhiều bộ dữ liệu:
+
+```bash
+python query_time_main10.py --datasets breast_cancer lfw
+```
+
+Thiết lập mặc định sử dụng tối đa 200 mẫu test, một lượt warm-up và năm lần
+đo. Giá trị báo cáo là trung vị mili giây trên mỗi mẫu. Phép đo chỉ bao gồm
+`KNeighborsClassifier.predict` sau khi dữ liệu đã được chuẩn hóa và biến đổi;
+không bao gồm thời gian fit, StandardScaler, PCA hoặc LDA. Vì thời gian tuyệt
+đối phụ thuộc phần cứng và tải hệ thống, kết quả chủ yếu dùng để so sánh tương
+đối giữa các cấu hình trong cùng một lần chạy.
+
+Trong Google Colab hoặc Jupyter, chạy script bằng lệnh shell:
+
+```python
+!python query_time_main10.py --output results/query_time_main10.csv
+```
 
 ## Báo cáo
 
-Chi tiết về cơ sở toán học, phương pháp luận và phân tích kết quả được trình bày đầy đủ trong `report.pdf`.
+Cơ sở lý thuyết, thiết lập thực nghiệm, kết quả phân loại, query time, thảo
+luận và hạn chế được trình bày trong
+[`Technical_Report.pdf`](./Technical_Report.pdf).
